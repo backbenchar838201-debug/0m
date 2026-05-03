@@ -1,0 +1,2411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Om – SEO Portfolio 2026</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-purple: #bc13fe;
+            --neon-cyan: #00fff9;
+            --neon-pink: #ff006e;
+            --neon-green: #00ff88;
+            --neon-yellow: #ffbe0b;
+            --dark-bg: #02020a;
+            --panel-bg: rgba(255, 255, 255, 0.03);
+            --panel-border: rgba(255, 255, 255, 0.08);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* Background Canvas */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Grid Overlay */
+        .grid-overlay {
+            position: fixed;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: 1;
+            pointer-events: none;
+            mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+        }
+
+        /* Slide System */
+        .presentation {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            z-index: 2;
+        }
+
+        .slide {
+            position: absolute;
+            inset: 0;
+            padding: 60px 80px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+            display: grid;
+            grid-template-rows: auto 1fr;
+            gap: 30px;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Glassmorphism Panel */
+        .glass-panel {
+            background: var(--panel-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--panel-border);
+            border-radius: 24px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .glass-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
+            opacity: 0.5;
+        }
+
+        /* Neon Effects */
+        .neon-text {
+            text-shadow: 
+                0 0 10px rgba(0, 243, 255, 0.5),
+                0 0 20px rgba(0, 243, 255, 0.3),
+                0 0 40px rgba(188, 19, 254, 0.2);
+        }
+
+        .neon-border {
+            box-shadow: 
+                0 0 20px rgba(0, 243, 255, 0.15),
+                inset 0 0 20px rgba(0, 243, 255, 0.05);
+        }
+
+        .glow-blue { filter: drop-shadow(0 0 8px rgba(0, 243, 255, 0.6)); }
+        .glow-purple { filter: drop-shadow(0 0 8px rgba(188, 19, 254, 0.6)); }
+        .glow-green { filter: drop-shadow(0 0 8px rgba(0, 255, 136, 0.6)); }
+        .glow-yellow { filter: drop-shadow(0 0 8px rgba(255, 190, 11, 0.6)); }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-12px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(0.98); }
+        }
+
+        @keyframes glow-pulse {
+            0%, 100% { box-shadow: 0 0 5px var(--neon-blue); }
+            50% { box-shadow: 0 0 20px var(--neon-blue), 0 0 40px var(--neon-purple); }
+        }
+
+        @keyframes slide-up {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes draw-line {
+            from { stroke-dashoffset: 1000; }
+            to { stroke-dashoffset: 0; }
+        }
+
+        @keyframes rotate-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        @keyframes count-up {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes flow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        .animate-float-delay { animation: float 6s ease-in-out 2s infinite; }
+        .animate-pulse { animation: pulse 3s ease-in-out infinite; }
+        .animate-glow { animation: glow-pulse 3s ease-in-out infinite; }
+        .animate-slide-up { animation: slide-up 0.8s ease forwards; }
+        .animate-glitch { animation: glitch 0.3s ease infinite; }
+
+        /* Header */
+        .slide-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--panel-border);
+        }
+
+        .slide-title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            letter-spacing: -2px;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .brand-badge {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 24px;
+            background: rgba(0, 243, 255, 0.05);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-radius: 50px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--neon-blue);
+        }
+
+        .brand-badge .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--neon-green);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--neon-green);
+            animation: pulse 2s infinite;
+        }
+
+        /* Navigation */
+        .nav-dots {
+            position: fixed;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            z-index: 100;
+        }
+
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-dot.active {
+            background: var(--neon-blue);
+            box-shadow: 0 0 15px var(--neon-blue);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: scale(1.3);
+        }
+
+        .nav-dot::after {
+            content: attr(data-label);
+            position: absolute;
+            right: 24px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-dot:hover::after {
+            opacity: 1;
+        }
+
+        .slide-counter {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            z-index: 100;
+        }
+
+        .slide-counter span {
+            color: var(--neon-blue);
+            font-weight: 700;
+        }
+
+        /* Google Badge */
+        .google-badge {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            width: 70px;
+            height: 70px;
+            z-index: 10;
+        }
+
+        .google-badge svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 0 15px rgba(255, 190, 11, 0.5));
+        }
+
+        /* Circular Meter */
+        .meter-container {
+            position: relative;
+            width: 140px;
+            height: 140px;
+        }
+
+        .meter-svg {
+            transform: rotate(-90deg);
+            width: 100%;
+            height: 100%;
+        }
+
+        .meter-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.05);
+            stroke-width: 8;
+        }
+
+        .meter-fill {
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 2s ease;
+        }
+
+        .meter-value {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .meter-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--neon-blue);
+        }
+
+        .meter-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 2px;
+        }
+
+        /* Network Graph */
+        .network-graph {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .network-graph svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .node {
+            fill: var(--neon-blue);
+            filter: drop-shadow(0 0 8px var(--neon-blue));
+            animation: pulse 3s infinite;
+        }
+
+        .node-central {
+            fill: var(--neon-purple);
+            filter: drop-shadow(0 0 15px var(--neon-purple));
+            animation: pulse 2s infinite;
+        }
+
+        .link {
+            stroke: rgba(0, 243, 255, 0.3);
+            stroke-width: 2;
+            stroke-dasharray: 5, 5;
+            animation: draw-line 3s ease infinite;
+        }
+
+        /* Social Icons */
+        .social-float {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--panel-border);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .social-float .engagement {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--neon-green);
+            color: #000;
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Code Block */
+        .code-block {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid rgba(0, 243, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .code-block .key { color: var(--neon-purple); }
+        .code-block .string { color: var(--neon-green); }
+        .code-block .number { color: var(--neon-yellow); }
+        .code-block .tag { color: var(--neon-blue); }
+
+        /* SERP Mockup */
+        .serp-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: all 0.3s;
+        }
+
+        .serp-item:hover {
+            border-color: rgba(0, 243, 255, 0.2);
+            background: rgba(0, 243, 255, 0.02);
+        }
+
+        .serp-url {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .serp-title {
+            font-size: 1.1rem;
+            color: var(--neon-blue);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .serp-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .serp-rank {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, rgba(255, 190, 11, 0.15), rgba(255, 190, 11, 0.05));
+            border: 1px solid rgba(255, 190, 11, 0.3);
+            color: var(--neon-yellow);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+
+        /* Chart Line */
+        .chart-container {
+            position: relative;
+            height: 120px;
+            width: 100%;
+        }
+
+        .chart-svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        .chart-line {
+            fill: none;
+            stroke: var(--neon-green);
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 0 8px rgba(0, 255, 136, 0.4));
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: draw-line 3s ease forwards;
+        }
+
+        .chart-area {
+            fill: url(#gradientGreen);
+            opacity: 0.2;
+        }
+
+        .chart-dot {
+            fill: var(--neon-green);
+            filter: drop-shadow(0 0 6px var(--neon-green));
+        }
+
+        /* Device Mockup */
+        .device-mockup {
+            position: relative;
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .device-mockup.desktop {
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+        }
+
+        .device-mockup.phone {
+            width: 80px;
+            height: 160px;
+            border-radius: 16px;
+            border-width: 3px;
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 10;
+        }
+
+        .device-screen {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(0, 243, 255, 0.05), transparent);
+            padding: 12px;
+        }
+
+        .device-notch {
+            width: 40%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            margin: 0 auto 8px;
+        }
+
+        /* Redirect Arrow */
+        .redirect-arrow {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .redirect-arrow .arrow-line {
+            flex: 1;
+            height: 2px;
+            position: relative;
+            background: linear-gradient(90deg, var(--neon-green), var(--neon-yellow));
+        }
+
+        .redirect-arrow .arrow-head {
+            position: absolute;
+            right: -2px;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid var(--neon-yellow);
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+
+        .redirect-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+        }
+
+        .label-301 {
+            background: rgba(0, 255, 136, 0.15);
+            color: var(--neon-green);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .label-302 {
+            background: rgba(255, 190, 11, 0.15);
+            color: var(--neon-yellow);
+            border: 1px solid rgba(255, 190, 11, 0.3);
+        }
+
+        /* Schema Block */
+        .schema-block {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-radius: 12px;
+            padding: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .schema-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--neon-blue), var(--neon-purple));
+        }
+
+        /* Rich Snippet Stars */
+        .stars {
+            color: var(--neon-yellow);
+            font-size: 1rem;
+            letter-spacing: 2px;
+        }
+
+        /* Broken Chain */
+        .broken-chain {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 2rem;
+            color: var(--neon-pink);
+        }
+
+        .chain-break {
+            width: 20px;
+            height: 4px;
+            background: var(--neon-pink);
+            border-radius: 2px;
+            box-shadow: 0 0 10px var(--neon-pink);
+            animation: pulse 1s infinite;
+        }
+
+        /* Lighthouse Gauge */
+        .lighthouse-gauge {
+            width: 80px;
+            height: 80px;
+            position: relative;
+        }
+
+        .lighthouse-gauge svg {
+            transform: rotate(-90deg);
+            width: 100%;
+            height: 100%;
+        }
+
+        .gauge-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.05);
+            stroke-width: 6;
+        }
+
+        .gauge-fill {
+            fill: none;
+            stroke-width: 6;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 2s ease;
+        }
+
+        .gauge-text {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        /* Canonical Animation */
+        .canonical-container {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .canonical-page {
+            width: 80px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            transition: all 0.8s ease;
+        }
+
+        .canonical-page.merging {
+            animation: mergePage 2s ease forwards;
+        }
+
+        @keyframes mergePage {
+            0% { transform: translateX(0); opacity: 1; }
+            100% { transform: translateX(40px); opacity: 0.3; }
+        }
+
+        .page-line {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+        }
+
+        .page-line.short { width: 60%; }
+
+        .canonical-arrow {
+            color: var(--neon-green);
+            font-size: 1.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        .canonical-main {
+            width: 100px;
+            height: 120px;
+            background: rgba(0, 255, 136, 0.05);
+            border: 2px solid var(--neon-green);
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.1);
+        }
+
+        .canonical-main .page-line {
+            background: rgba(0, 255, 136, 0.3);
+        }
+
+        /* OG Card */
+        .og-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            overflow: hidden;
+            max-width: 220px;
+        }
+
+        .og-image {
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(135deg, rgba(0, 243, 255, 0.1), rgba(188, 19, 254, 0.1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .og-content {
+            padding: 12px;
+        }
+
+        .og-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .og-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.3;
+        }
+
+        .og-url {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* 404 Glitch */
+        .glitch-404 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--neon-pink);
+            text-shadow: 
+                2px 0 var(--neon-blue), 
+                -2px 0 var(--neon-yellow);
+            animation: glitch 0.4s infinite;
+            letter-spacing: 4px;
+        }
+
+        .error-page-mockup {
+            background: rgba(255, 0, 110, 0.05);
+            border: 1px solid rgba(255, 0, 110, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .error-page-mockup::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(255, 0, 110, 0.03) 2px,
+                rgba(255, 0, 110, 0.03) 4px
+            );
+            pointer-events: none;
+        }
+
+        /* Traffic Chart Big */
+        .traffic-chart-big {
+            height: 200px;
+            width: 100%;
+            position: relative;
+        }
+
+        /* Layout Helpers */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        .flex-col { display: flex; flex-direction: column; gap: 16px; }
+        .flex-row { display: flex; gap: 16px; align-items: center; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .text-center { text-align: center; }
+        .mt-2 { margin-top: 8px; }
+        .mt-4 { margin-top: 16px; }
+        .mb-2 { margin-bottom: 8px; }
+        .p-4 { padding: 16px; }
+        .h-full { height: 100%; }
+        .relative { position: relative; }
+        .overflow-hidden { overflow: hidden; }
+
+        .section-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--neon-blue);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-label::before {
+            content: '';
+            width: 20px;
+            height: 2px;
+            background: var(--neon-blue);
+            box-shadow: 0 0 8px var(--neon-blue);
+        }
+
+        /* Mini Dashboard Cards */
+        .stat-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--neon-blue);
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Heading Highlights */
+        .heading-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .tag-h1 {
+            background: rgba(0, 243, 255, 0.15);
+            color: var(--neon-blue);
+            border: 1px solid rgba(0, 243, 255, 0.3);
+        }
+
+        .tag-h2 {
+            background: rgba(188, 19, 254, 0.15);
+            color: var(--neon-purple);
+            border: 1px solid rgba(188, 19, 254, 0.3);
+        }
+
+        .tag-title {
+            background: rgba(0, 255, 136, 0.15);
+            color: var(--neon-green);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .tag-meta {
+            background: rgba(255, 190, 11, 0.15);
+            color: var(--neon-yellow);
+            border: 1px solid rgba(255, 190, 11, 0.3);
+        }
+
+        /* Keyword Glow */
+        .keyword-glow {
+            background: linear-gradient(135deg, rgba(0, 243, 255, 0.2), rgba(188, 19, 254, 0.2));
+            border-radius: 4px;
+            padding: 2px 6px;
+            color: var(--neon-cyan);
+            font-weight: 600;
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
+        }
+
+        /* Architecture Tree */
+        .arch-tree {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .arch-node {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            background: rgba(0, 243, 255, 0.05);
+            border: 1px solid rgba(0, 243, 255, 0.15);
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            position: relative;
+        }
+
+        .arch-node::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--neon-blue);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--neon-blue);
+        }
+
+        .arch-children {
+            margin-left: 24px;
+            border-left: 1px solid rgba(0, 243, 255, 0.2);
+            padding-left: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .arch-child {
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Responsive Grid for Slide Content */
+        .slide-content {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 30px;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .slide-content.full {
+            grid-template-columns: 1fr;
+        }
+
+        .slide-content.three-col {
+            grid-template-columns: 1fr 1.2fr 1fr;
+        }
+
+        /* Scrollbar hide */
+        ::-webkit-scrollbar { width: 0; }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip::after {
+            content: attr(data-tip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+        }
+
+        /* Influencer Avatar */
+        .influencer-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .influencer-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+        }
+
+        .influencer-info {
+            flex: 1;
+        }
+
+        .influencer-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .influencer-niche {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .connection-line {
+            width: 30px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--neon-blue), transparent);
+            position: relative;
+        }
+
+        .connection-line::after {
+            content: '';
+            position: absolute;
+            right: -4px;
+            top: -3px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--neon-blue);
+            box-shadow: 0 0 8px var(--neon-blue);
+            animation: pulse 2s infinite;
+        }
+
+        /* Citation Flow */
+        .citation-ticker {
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        .citation-track {
+            display: inline-flex;
+            gap: 24px;
+            animation: ticker 20s linear infinite;
+        }
+
+        @keyframes ticker {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .citation-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .citation-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--neon-green);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--neon-green);
+        }
+
+        /* Guest Post Visual */
+        .guest-post-flow {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .doc-icon {
+            width: 60px;
+            height: 80px;
+            background: rgba(0, 243, 255, 0.05);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            gap: 6px;
+        }
+
+        .doc-line {
+            height: 3px;
+            background: rgba(0, 243, 255, 0.2);
+            border-radius: 2px;
+        }
+
+        .doc-line.half { width: 60%; }
+        .doc-arrow {
+            color: var(--neon-blue);
+            font-size: 1.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        /* URL Breadcrumb */
+        .url-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            border: 1px solid rgba(0, 255, 136, 0.1);
+        }
+
+        .url-part {
+            color: var(--neon-green);
+        }
+
+        .url-sep {
+            color: var(--text-muted);
+        }
+
+        /* Image Alt Visual */
+        .image-opt-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .img-placeholder {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, rgba(0, 243, 255, 0.1), rgba(188, 19, 254, 0.1));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .img-meta {
+            flex: 1;
+        }
+
+        .img-alt-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--neon-blue);
+            background: rgba(0, 243, 255, 0.05);
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(0, 243, 255, 0.1);
+        }
+
+        /* Speed Gauge Large */
+        .speed-gauge-large {
+            width: 180px;
+            height: 180px;
+            position: relative;
+        }
+
+        .speed-gauge-large svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .speed-value {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .speed-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--neon-green);
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+        }
+
+        .speed-unit {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: -5px;
+        }
+
+        .speed-label {
+            font-size: 0.7rem;
+            color: var(--neon-green);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 4px;
+            font-weight: 700;
+        }
+
+        /* Checklist */
+        .checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .check-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(0, 255, 136, 0.15);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            color: var(--neon-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            flex-shrink: 0;
+        }
+
+        /* Internal Link Map */
+        .link-map {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .link-node {
+            padding: 10px;
+            background: rgba(0, 243, 255, 0.03);
+            border: 1px solid rgba(0, 243, 255, 0.1);
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-secondary);
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .link-node:hover {
+            border-color: var(--neon-blue);
+            background: rgba(0, 243, 255, 0.08);
+            color: var(--neon-blue);
+        }
+
+        .link-node.active {
+            border-color: var(--neon-purple);
+            background: rgba(188, 19, 254, 0.08);
+            color: var(--neon-purple);
+        }
+
+        /* Content Readability Bars */
+        .readability-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .readability-label {
+            width: 80px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: right;
+        }
+
+        .readability-track {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .readability-fill {
+            height: 100%;
+            border-radius: 3px;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-green));
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+            animation: fillBar 2s ease forwards;
+            transform-origin: left;
+            transform: scaleX(0);
+        }
+
+        @keyframes fillBar {
+            to { transform: scaleX(1); }
+        }
+
+        .readability-value {
+            width: 40px;
+            font-size: 0.8rem;
+            color: var(--neon-blue);
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+        }
+
+        /* Slide specific layouts */
+        .slide-1-content {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 24px;
+            height: 100%;
+        }
+
+        .slide-1-main {
+            grid-row: span 2;
+            position: relative;
+        }
+
+        .slide-2-content {
+            display: grid;
+            grid-template-columns: 1fr 1.3fr 1fr;
+            gap: 24px;
+            height: 100%;
+        }
+
+        .slide-2-center {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .slide-3-content {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr 1fr;
+            gap: 24px;
+            height: 100%;
+        }
+
+        /* Arrow key hint */
+        .key-hint {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 16px;
+            z-index: 100;
+            opacity: 0.6;
+            transition: opacity 0.3s;
+        }
+
+        .key-hint:hover {
+            opacity: 1;
+        }
+
+        .key {
+            width: 36px;
+            height: 36px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Mobile responsive adjustments */
+        @media (max-width: 1200px) {
+            .slide { padding: 30px; }
+            .slide-title { font-size: 2.5rem; }
+            .slide-1-content,
+            .slide-2-content,
+            .slide-3-content {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+                overflow-y: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="particle-canvas"></canvas>
+    <div class="grid-overlay"></div>
+
+    <!-- Navigation -->
+    <div class="nav-dots">
+        <div class="nav-dot active" data-index="0" data-label="Off-Page"></div>
+        <div class="nav-dot" data-index="1" data-label="On-Page"></div>
+        <div class="nav-dot" data-index="2" data-label="Technical"></div>
+    </div>
+
+    <div class="slide-counter"><span id="current-slide">01</span> / 03</div>
+
+    <div class="key-hint">
+        <div class="key">←</div>
+        <div class="key">→</div>
+    </div>
+
+    <div class="presentation">
+        <!-- SLIDE 1: OFF-PAGE SEO -->
+        <div class="slide active" id="slide-0">
+            <div class="slide-header">
+                <div>
+                    <div class="section-label">SEO Portfolio 2026</div>
+                    <h1 class="slide-title neon-text">OFF-PAGE SEO</h1>
+                </div>
+                <div class="brand-badge">
+                    <div class="dot"></div>
+                    <span>Om – SEO Expert</span>
+                </div>
+            </div>
+
+            <div class="slide-1-content">
+                <!-- Main Network Graph -->
+                <div class="glass-panel slide-1-main">
+                    <div class="section-label">Backlink Network</div>
+                    <div class="network-graph">
+                        <svg viewBox="0 0 600 500">
+                            <defs>
+                                <filter id="glow-blue">
+                                    <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                    <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                                </filter>
+                                <filter id="glow-purple">
+                                    <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                                    <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                                </filter>
+                            </defs>
+                            <!-- Links -->
+                            <line class="link" x1="300" y1="250" x2="150" y2="100" />
+                            <line class="link" x1="300" y1="250" x2="450" y2="100" />
+                            <line class="link" x1="300" y1="250" x2="500" y2="250" />
+                            <line class="link" x1="300" y1="250" x2="450" y2="400" />
+                            <line class="link" x1="300" y1="250" x2="150" y2="400" />
+                            <line class="link" x1="300" y1="250" x2="100" y2="250" />
+                            <line class="link" x1="300" y1="250" x2="200" y2="150" />
+                            <line class="link" x1="300" y1="250" x2="400" y2="150" />
+
+                            <!-- Outer Nodes -->
+                            <circle class="node" cx="150" cy="100" r="12" />
+                            <circle class="node" cx="450" cy="100" r="12" />
+                            <circle class="node" cx="500" cy="250" r="12" />
+                            <circle class="node" cx="450" cy="400" r="12" />
+                            <circle class="node" cx="150" cy="400" r="12" />
+                            <circle class="node" cx="100" cy="250" r="12" />
+                            <circle class="node" cx="200" cy="150" r="10" />
+                            <circle class="node" cx="400" cy="150" r="10" />
+
+                            <!-- Central Node -->
+                            <circle class="node-central" cx="300" cy="250" r="25" filter="url(#glow-purple)" />
+                            <text x="300" y="255" text-anchor="middle" fill="white" font-size="10" font-family="JetBrains Mono" font-weight="700">OM</text>
+
+                            <!-- Labels -->
+                            <text x="150" y="80" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="Inter">Forbes</text>
+                            <text x="450" y="80" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="Inter">TechCrunch</text>
+                            <text x="500" y="280" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="Inter">Wikipedia</text>
+                            <text x="450" y="430" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="Inter">HubSpot</text>
+                            <text x="150" y="430" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="Inter">Moz</text>
+                            <text x="100" y="280" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="Inter">Ahrefs</text>
+                        </svg>
+                    </div>
+
+                    <!-- Floating Social Icons -->
+                    <div class="social-float animate-float" style="top: 10%; right: 5%;">
+                        📘
+                        <span class="engagement">+2.4K</span>
+                    </div>
+                    <div class="social-float animate-float-delay" style="top: 60%; right: 8%;">
+                        📸
+                        <span class="engagement">+8.1K</span>
+                    </div>
+                    <div class="social-float animate-float" style="bottom: 15%; right: 15%;">
+                        💬
+                        <span class="engagement">+1.2K</span>
+                    </div>
+
+                    <!-- Google Badge -->
+                    <div class="google-badge">
+                        <svg viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="#ffbe0b" stroke-width="2" opacity="0.3"/>
+                            <circle cx="50" cy="50" r="38" fill="rgba(255,190,11,0.1)" stroke="#ffbe0b" stroke-width="1"/>
+                            <text x="50" y="45" text-anchor="middle" fill="#ffbe0b" font-size="24" font-weight="900" font-family="Inter">#1</text>
+                            <text x="50" y="65" text-anchor="middle" fill="#ffbe0b" font-size="10" font-family="JetBrains Mono">GOOGLE</text>
+                            <path d="M50 10 L55 20 L45 20 Z" fill="#ffbe0b"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Right Column Top -->
+                <div class="flex-col">
+                    <div class="glass-panel" style="flex: 1;">
+                        <div class="section-label">Domain Authority</div>
+                        <div class="flex-row justify-center items-center" style="height: calc(100% - 30px);">
+                            <div class="meter-container">
+                                <svg class="meter-svg" viewBox="0 0 140 140">
+                                    <circle class="meter-bg" cx="70" cy="70" r="60"/>
+                                    <circle class="meter-fill" cx="70" cy="70" r="60" 
+                                        stroke="url(#meterGradient)" 
+                                        stroke-dasharray="377" 
+                                        stroke-dashoffset="56"
+                                        stroke-linecap="round"/>
+                                    <defs>
+                                        <linearGradient id="meterGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" stop-color="#00f3ff"/>
+                                            <stop offset="100%" stop-color="#bc13fe"/>
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                                <div class="meter-value">
+                                    <div class="meter-number">85</div>
+                                    <div class="meter-label">DA Score</div>
+                                </div>
+                            </div>
+                            <div class="flex-col" style="margin-left: 20px;">
+                                <div class="stat-card" style="padding: 10px;">
+                                    <div class="stat-value" style="font-size: 1.2rem;">12.5K</div>
+                                    <div class="stat-label" style="font-size: 0.6rem;">Backlinks</div>
+                                </div>
+                                <div class="stat-card" style="padding: 10px;">
+                                    <div class="stat-value" style="font-size: 1.2rem; color: var(--neon-green);">94</div>
+                                    <div class="stat-label" style="font-size: 0.6rem;">Citation Flow</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel" style="flex: 1;">
+                        <div class="section-label">Guest Posting</div>
+                        <div class="flex-row justify-center items-center" style="height: calc(100% - 30px); gap: 20px;">
+                            <div class="guest-post-flow">
+                                <div class="doc-icon">
+                                    <div class="doc-line"></div>
+                                    <div class="doc-line"></div>
+                                    <div class="doc-line half"></div>
+                                    <div class="doc-line"></div>
+                                </div>
+                                <div class="doc-arrow">→</div>
+                                <div class="doc-icon" style="border-color: rgba(0,255,136,0.3); background: rgba(0,255,136,0.05);">
+                                    <div class="doc-line" style="background: rgba(0,255,136,0.3);"></div>
+                                    <div class="doc-line" style="background: rgba(0,255,136,0.3);"></div>
+                                    <div class="doc-line half" style="background: rgba(0,255,136,0.3);"></div>
+                                    <div class="doc-line" style="background: rgba(0,255,136,0.3);"></div>
+                                </div>
+                            </div>
+                            <div class="flex-col">
+                                <div class="check-item">
+                                    <div class="check-icon">✓</div>
+                                    <span>High DA Targets</span>
+                                </div>
+                                <div class="check-item">
+                                    <div class="check-icon">✓</div>
+                                    <span>Niche Relevant</span>
+                                </div>
+                                <div class="check-item">
+                                    <div class="check-icon">✓</div>
+                                    <span>DoFollow Links</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column Bottom -->
+                <div class="flex-col">
+                    <div class="glass-panel" style="flex: 1;">
+                        <div class="section-label">Influencer Outreach</div>
+                        <div class="flex-col" style="gap: 10px; margin-top: 8px;">
+                            <div class="influencer-card">
+                                <div class="influencer-avatar">A</div>
+                                <div class="influencer-info">
+                                    <div class="influencer-name">Alex Tech</div>
+                                    <div class="influencer-niche">Tech Reviewer • 500K</div>
+                                </div>
+                                <div class="connection-line"></div>
+                            </div>
+                            <div class="influencer-card">
+                                <div class="influencer-avatar" style="background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));">S</div>
+                                <div class="influencer-info">
+                                    <div class="influencer-name">Sarah Digital</div>
+                                    <div class="influencer-niche">Marketing • 320K</div>
+                                </div>
+                                <div class="connection-line"></div>
+                            </div>
+                            <div class="influencer-card">
+                                <div class="influencer-avatar" style="background: linear-gradient(135deg, var(--neon-green), var(--neon-blue));">M</div>
+                                <div class="influencer-info">
+                                    <div class="influencer-name">Mike SEO</div>
+                                    <div class="influencer-niche">SEO Niche • 180K</div>
+                                </div>
+                                <div class="connection-line"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel" style="flex: 1;">
+                        <div class="section-label">Brand Mentions</div>
+                        <div class="citation-ticker" style="margin-top: 10px;">
+                            <div class="citation-track">
+                                <div class="citation-item"><span class="citation-dot"></span> Forbes</div>
+                                <div class="citation-item"><span class="citation-dot"></span> Entrepreneur</div>
+                                <div class="citation-item"><span class="citation-dot"></span> Inc.com</div>
+                                <div class="citation-item"><span class="citation-dot"></span> Business Insider</div>
+                                <div class="citation-item"><span class="citation-dot"></span> Mashable</div>
+                                <div class="citation-item"><span class="citation-dot"></span> Wired</div>
+                                <div class="citation-item"><span class="citation-dot"></span> Forbes</div>
+                                <div class="citation-item"><span class="citation-dot"></span> Entrepreneur</div>
+                                <div class="citation-item"><span class="citation-dot"></span> Inc.com</div>
+                                <div class="citation-item"><span class="citation-dot"></span> Business Insider</div>
+                                <div class="citation-item"><span class="citation-dot"></span> Mashable</div>
+                                <div class="citation-item"><span class="citation-dot"></span> Wired</div>
+                            </div>
+                        </div>
+                        <div class="traffic-chart-big" style="margin-top: 16px; height: 80px;">
+                            <svg class="chart-svg" viewBox="0 0 400 100" preserveAspectRatio="none">
+                                <defs>
+                                    <linearGradient id="gradientGreen" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="#00ff88" stop-opacity="0.3"/>
+                                        <stop offset="100%" stop-color="#00ff88" stop-opacity="0"/>
+                                    </linearGradient>
+                                </defs>
+                                <path class="chart-area" d="M0,100 L0,80 Q50,70 100,60 T200,40 T300,30 T400,10 L400,100 Z"/>
+                                <path class="chart-line" d="M0,80 Q50,70 100,60 T200,40 T300,30 T400,10"/>
+                                <circle class="chart-dot" cx="400" cy="10" r="5"/>
+                            </svg>
+                        </div>
+                        <div class="flex-between" style="margin-top: 8px;">
+                            <span style="font-size: 0.75rem; color: var(--text-muted);">Organic Traffic</span>
+                            <span style="font-size: 0.85rem; color: var(--neon-green); font-weight: 700; font-family: 'JetBrains Mono', monospace;">+340%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 2: ON-PAGE SEO -->
+        <div class="slide" id="slide-1">
+            <div class="slide-header">
+                <div>
+                    <div class="section-label">SEO Portfolio 2026</div>
+                    <h1 class="slide-title neon-text">ON-PAGE SEO</h1>
+                </div>
+                <div class="brand-badge">
+                    <div class="dot"></div>
+                    <span>Om – SEO Expert</span>
+                </div>
+            </div>
+
+            <div class="slide-2-content">
+                <!-- Left Column -->
+                <div class="flex-col">
+                    <div class="glass-panel" style="flex: 1;">
+                        <div class="section-label">Keyword Optimization</div>
+                        <div style="margin-top: 16px; line-height: 1.8; font-size: 0.9rem; color: var(--text-secondary);">
+                            <p style="margin-bottom: 12px;">
+                                Our <span class="keyword-glow">digital marketing</span> strategies leverage 
+                                <span class="keyword-glow">advanced SEO</span> techniques to improve 
+                                <span class="keyword-glow">organic rankings</span> and drive qualified 
+                                <span class="keyword-glow">traffic growth</span>.
+                            </p>
+                            <p>
+                                By optimizing for <span class="keyword-glow">search intent</span> and 
+                                <span class="keyword-glow">user experience</span>, we ensure maximum 
+                                <span class="keyword-glow">visibility</span> across all search engines.
+                            </p>
+                        </div>
+                        <div class="grid-2" style="margin-top: 16px;">
+                            <div class="stat-card">
+                                <div class="stat-value">2.4%</div>
+                                <div class="stat-label">Keyword Density</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" style="color: var(--neon-purple);">98</div>
+                                <div class="stat-label">LSI Score</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel" style="flex: 1;">
+                        <div class="section-label">Internal Linking</div>
+                        <div class="link-map" style="margin-top: 12px;">
+                            <div class="link-node active">Home</div>
+                            <div class="link-node">Services</div>
+                            <div class="link-node">About</div>
+                            <div class="link-node">Blog</div>
+                            <div class="link-node">Case Studies</div>
+                            <div class="link-node">Contact</div>
+                            <div class="link-node">Pricing</div>
+                            <div class="link-node">FAQ</div>
+                            <div class="link-node">Resources</div>
+                        </div>
+                        <div class="flex-between" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--panel-border);">
+                            <span style="font-size: 0.8rem; color: var(--text-muted);">Avg. Links / Page</span>
+                            <span style="font-family: 'JetBrains Mono', monospace; color: var(--neon-blue); font-weight: 700;">12.4</span>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel">
+                        <div class="section-label">Image Optimization</div>
+                        <div class="flex-col" style="margin-top: 10px; gap: 10px;">
+                            <div class="image-opt-card">
+                                <div class="img-placeholder">🖼️</div>
+                                <div class="img-meta">
+                                    <div style="font-size: 0.8rem; margin-bottom: 4px;">hero-banner.webp</div>
+                                    <div class="img-alt-tag">alt="SEO Expert Dashboard 2026"</div>
+                                </div>
+                                <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--neon-green);">24KB</div>
+                            </div>
+                            <div class="image-opt-card">
+                                <div class="img-placeholder">📊</div>
+                                <div class="img-meta">
+                                    <div style="font-size: 0.8rem; margin-bottom: 4px;">analytics-chart.svg</div>
+                                    <div class="img-alt-tag">alt="Traffic Growth Analytics"</div>
+                                </div>
+                                <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--neon-green);">8KB</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Center Column -->
+                <div class="slide-2-center">
+                    <div class="glass-panel" style="flex: 1; display: flex; flex-direction: column;">
+                        <div class="section-label">Page Structure</div>
+                        <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 20px; padding: 20px 0;">
+                            <div>
+                                <div class="heading-tag tag-title">&lt;title&gt;</div>
+                                <div style="font-size: 1.1rem; color: var(--text-primary); font-weight: 600; padding: 10px; background: rgba(0,255,136,0.05); border-radius: 8px; border-left: 3px solid var(--neon-green);">
+                                    Om SEO Expert | Premium Digital Marketing Portfolio 2026
+                                </div>
+                            </div>
+                            <div>
+                                <div class="heading-tag tag-meta">&lt;meta name="description"&gt;</div>
+                                <div style="font-size: 0.9rem; color: var(--text-secondary); padding: 10px; background: rgba(255,190,11,0.05); border-radius: 8px; border-left: 3px solid var(--neon-yellow); line-height: 1.5;">
+                                    Award-winning SEO specialist delivering top rankings, organic traffic growth, and measurable ROI for enterprise clients worldwide.
+                                </div>
+                            </div>
+                            <div>
+                                <div class="heading-tag tag-h1">&lt;h1&gt;</div>
+                                <div style="font-size: 1.5rem; color: var(--neon-blue); font-weight: 700; padding: 8px 0;">
+                                    Enterprise SEO Solutions That Dominate Search
+                                </div>
+                            </div>
+                            <div>
+                                <div class="heading-tag tag-h2">&lt;h2&gt;</div>
+                                <div style="font-size: 1.1rem; color: var(--neon-purple); font-weight: 600; padding: 6px 0;">
+                                    Technical SEO Audits & Strategy
+                                </div>
+                            </div>
+                            <div>
+                                <div class="heading-tag tag-h2">&lt;h2&gt;</div>
+                                <div style="font-size: 1.1rem; color: var(--neon-purple); font-weight: 600; padding: 6px 0;">
+                                    Content Optimization Framework
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel">
+                        <div class="section-label">SERP Preview</div>
+                        <div style="margin-top: 12px;">
+                            <div class="serp-item" style="border-color: rgba(0,243,255,0.2); background: rgba(0,243,255,0.02);">
+                                <div class="serp-url">www.omseo.expert › portfolio-2026</div>
+                                <div class="serp-title">Om SEO Expert | Premium Digital Marketing Portfolio</div>
+                                <div class="serp-desc">Award-winning SEO specialist delivering top rankings, organic traffic growth, and measurable ROI for enterprise clients...</div>
+                                <div class="serp-rank">⭐ Position #1</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="flex-col">
+                    <div class="glass-panel" style="flex: 1;">
+                        <div class="section-label">URL Structure</div>
+                        <div class="url-breadcrumb" style="margin-top: 12px;">
+                            <span class="url-part">https://</span>
+                            <span class="url-sep">/</span>
+                            <span class="url-part">omseo.expert</span>
+                            <span class="url-sep">/</span>
+                            <span class="url-part">services</span>
+                            <span class="url-sep">/</span>
+                            <span class="url-part">technical-seo</span>
+                        </div>
+                        <div class="checklist" style="margin-top: 16px;">
+                            <div class="check-item">
+                                <div class="check-icon">✓</div>
+                                <span>HTTPS Secure</span>
+                            </div>
+                            <div class="check-item">
+                                <div class="check-icon">✓</div>
+                                <span>Short & Descriptive</span>
+                            </div>
+                            <div class="check-item">
+                                <div class="check-icon">✓</div>
+                                <span>Hyphen Separated</span>
+                            </div>
+                            <div class="check-item">
+                                <div class="check-icon">✓</div>
+                                <span>Lowercase Format</span>
+                            </div>
+                            <div class="check-item">
+                                <div class="check-icon">✓</div>
+                                <span>No Stop Words</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel" style="flex: 1;">
+                        <div class="section-label">Content Readability</div>
+                        <div style="margin-top: 16px;">
+                            <div class="readability-bar">
+                                <div class="readability-label">Flesch</div>
+                                <div class="readability-track">
+                                    <div class="readability-fill" style="width: 85%;"></div>
+                                </div>
+                                <div class="readability-value">85</div>
+                            </div>
+                            <div class="readability-bar">
+                                <div class="readability-label">Grammar</div>
+                                <div class="readability-track">
+                                    <div class="readability-fill" style="width: 98%; background: linear-gradient(90deg, var(--neon-green), var(--neon-green));"></div>
+                                </div>
+                                <div class="readability-value">98</div>
+                            </div>
+                            <div class="readability-bar">
+                                <div class="readability-label">Structure</div>
+                                <div class="readability-track">
+                                    <div class="readability-fill" style="width: 92%;"></div>
+                                </div>
+                                <div class="readability-value">92</div>
+                            </div>
+                            <div class="readability-bar">
+                                <div class="readability-label">UX Score</div>
+                                <div class="readability-track">
+                                    <div class="readability-fill" style="width: 96%;"></div>
+                                </div>
+                                <div class="readability-value">96</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel">
+                        <div class="section-label">UX Signals</div>
+                        <div class="grid-2" style="margin-top: 10px;">
+                            <div class="stat-card" style="padding: 12px;">
+                                <div class="stat-value" style="font-size: 1.3rem; color: var(--neon-blue);">0.8s</div>
+                                <div class="stat-label" style="font-size: 0.6rem;">Avg. Dwell Time</div>
+                            </div>
+                            <div class="stat-card" style="padding: 12px;">
+                                <div class="stat-value" style="font-size: 1.3rem; color: var(--neon-purple);">4.2</div>
+                                <div class="stat-label" style="font-size: 0.6rem;">Pages / Session</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 3: TECHNICAL SEO -->
+        <div class="slide" id="slide-2">
+            <div class="slide-header">
+                <div>
+                    <div class="section-label">SEO Portfolio 2026</div>
+                    <h1 class="slide-title neon-text">TECHNICAL SEO</h1>
+                </div>
+                <div class="brand-badge">
+                    <div class="dot"></div>
+                    <span>Om – SEO Expert</span>
+                </div>
+            </div>
+
+            <div class="slide-3-content">
+                <!-- Left Column -->
+                <div class="flex-col">
+                    <div class="glass-panel" style="flex: 1;">
+                        <div class="section-label">Site Architecture</div>
+                        <div class="arch-tree" style="margin-top: 12px;">
+                            <div class="arch-node">omseo.expert</div>
+                            <div class="arch-children">
+                                <div class="arch-child">/services</div>
+                                <div class="arch-children">
+                                    <div class="arch-child">/seo-audit</div>
+                                    <div class="arch-child">/link-building</div>
+                                    <div class="arch-child">/content-strategy</div>
+                                </div>
+                                <div class="arch-child">/case-studies</div>
+                                <div class="arch-child">/blog</div>
+                                <div class="arch-child">/contact</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel" style="flex: 1;">
+                        <div class="section-label">Page Speed</div>
+                        <div class="flex-row justify-center items-center" style="margin-top: 10px;">
+                            <div class="speed-gauge-large">
+                                <svg viewBox="0 0 180 180">
+                                    <circle class="meter-bg" cx="90" cy="90" r="75" stroke-width="10"/>
+                                    <circle class="meter-fill" cx="90" cy="90" r="75" 
+                                        stroke="#00ff88" 
+                                        stroke-width="10"
+                                        stroke-dasharray="471"
+                                        stroke-dashoffset="47"
+                                        stroke-linecap="round"
+                                        filter="drop-shadow(0 0 10px rgba(0,255,136,0.4))"/>
+                                </svg>
+                                <div class="speed-value">
+                                    <div class="speed-number">0.4s</div>
+                                    <div class="speed-unit">Load Time</div>
+                                    <div class="speed-label">Excellent</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid-2" style="margin-top: 12px;">
+                            <div class="stat-card" style="padding: 10px;">
+                                <div class="stat-value" style="font-size: 1rem; color: var(--neon-green);">98</div>
+                                <div class="stat-label" style="font-size: 0.55rem;">Mobile</div>
+                            </div>
+                            <div class="stat-card" style="padding: 10px;">
+                                <div class="stat-value" style="font-size: 1rem; color: var(--neon-green);">99</div>
+                                <div class="stat-label" style="font-size: 0.55rem;">Desktop</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel" style="position: relative; min-height: 140px;">
+                        <div class="section-label">Responsive Design</div>
+                        <div class="device-mockup desktop" style="margin-top: 12px; height: 100px;">
+                            <div class="device-screen">
+                                <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                                    <div style="width: 30%; height: 8px; background: rgba(0,243,255,0.2); border-radius: 4px;"></div>
+                                    <div style="width: 20%; height: 8px; background: rgba(0,243,255,0.1); border-radius: 4px;"></div>
+                                </div>
+                                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 8px; height: 60px;">
+                                    <div style="background: rgba(0,243,255,0.05); border-radius: 4px;"></div>
+                                    <div style="background: rgba(188,19,254,0.05); border-radius: 4px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="device-mockup phone">
+                            <div class="device-notch"></div>
+                            <div class="device-screen" style="padding: 8px;">
+                                <div style="width: 100%; height: 6px; background: rgba(0,243,255,0.2); border-radius: 3px; margin-bottom: 6px;"></div>
+                                <div style="width: 80%; height: 6px; background: rgba(0,243,255,0.1); border-radius: 3px; margin-bottom: 6px;"></div>
+                                <div style="width: 100%; height: 40px; background: rgba(188,19,254,0.05); border-radius: 4px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Center Column -->
+                <div class="flex-col">
+                    <div class="glass-panel">
+                        <div class="section-label">Canonical Tags</div>
+                        <div class="canonical-container" style="margin-top: 12px; justify-content: center;">
+                            <div class="canonical-page" id="canon1">
+                                <div class="page-line"></div>
+                                <div class="page-line"></div>
+                                <div class="page-line short"></div>
+                                <div style="font-size: 0.6rem; color: var(--text-muted); margin-top: 4px; font-family: 'JetBrains Mono', monospace;">?page=2</div>
+                            </div>
+                            <div class="canonical-arrow">→</div>
+                            <div class="canonical-main">
+                                <div class="page-line"></div>
+                                <div class="page-line"></div>
+                                <div class="page-line"></div>
+                                <div class="page-line short"></div>
+                                <div style="font-size: 0.6rem; color: var(--neon-green); margin-top: 4px; font-family: 'JetBrains Mono', monospace;">/main-url</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel">
+                        <div class="section-label">Open Graph Tags</div>
+                        <div class="flex-row" style="margin-top: 12px; gap: 12px;">
+                            <div class="og-card">
+                                <div class="og-image">🌐</div>
+                                <div class="og-content">
+                                    <div class="og-title">Om SEO Expert Portfolio</div>
+                                    <div class="og-desc">Premium digital marketing & SEO services for enterprise growth.</div>
+                                    <div class="og-url">omseo.expert</div>
+                                </div>
+                            </div>
+                            <div class="og-card">
+                                <div class="og-image" style="background: linear-gradient(135deg, rgba(0,255,136,0.1), rgba(0,243,255,0.1));">💬</div>
+                                <div class="og-content">
+                                    <div class="og-title">Om SEO Expert</div>
+                                    <div class="og-desc">Get top Google rankings with proven SEO strategies.</div>
+                                    <div class="og-url">wa.me/omseo</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel">
+                        <div class="section-label">404 Error Handling</div>
+                        <div class="error-page-mockup" style="margin-top: 12px;">
+                            <div class="glitch-404">404</div>
+                            <div style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 8px;">Page Not Found</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px; font-family: 'JetBrains Mono', monospace;">Redirecting to homepage in 5s...</div>
+                            <div style="margin-top: 12px; display: flex; gap: 8px; justify-content: center;">
+                                <div style="padding: 6px 12px; background: rgba(255,0,110,0.1); border: 1px solid rgba(255,0,110,0.2); border-radius: 4px; font-size: 0.7rem; color: var(--neon-pink);">Custom Design</div>
+                                <div style="padding: 6px 12px; background: rgba(255,0,110,0.1); border: 1px solid rgba(255,0,110,0.2); border-radius: 4px; font-size: 0.7rem; color: var(--neon-pink);">Auto-Redirect</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel">
+                        <div class="section-label">301 & 302 Redirects</div>
+                        <div class="flex-col" style="margin-top: 10px; gap: 10px;">
+                            <div class="redirect-arrow">
+                                <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-muted);">/old-page</span>
+                                <div class="arrow-line"><div class="arrow-head"></div></div>
+                                <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--neon-green);">/new-page</span>
+                                <span class="redirect-label label-301">301</span>
+                            </div>
+                            <div class="redirect-arrow">
+                                <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-muted);">/promo-2025</span>
+                                <div class="arrow-line" style="background: linear-gradient(90deg, var(--neon-yellow), var(--neon-yellow));"><div class="arrow-head" style="border-left-color: var(--neon-yellow);"></div></div>
+                                <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--neon-yellow);">/promo-2026</span>
+                                <span class="redirect-label label-302">302</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="flex-col">
+                    <div class="glass-panel" style="flex: 1;">
+                        <div class="section-label">Schema Markup</div>
+                        <div class="schema-block" style="margin-top: 10px;">
+                            <div class="code-block" style="background: transparent; border: none; padding: 0;">
+                                <div>{</div>
+                                <div style="padding-left: 12px;"><span class="string">"@context"</span>: <span class="string">"https://schema.org"</span>,</div>
+                                <div style="padding-left: 12px;"><span class="string">"@type"</span>: <span class="string">"ProfessionalService"</span>,</div>
+                                <div style="padding-left: 12px;"><span class="string">"name"</span>: <span class="string">"Om SEO Expert"</span>,</div>
+                                <div style="padding-left: 12px;"><span class="string">"aggregateRating"</span>: {</div>
+                                <div style="padding-left: 24px;"><span class="string">"ratingValue"</span>: <span class="number">"5.0"</span>,</div>
+                                <div style="padding-left: 24px;"><span class="string">"reviewCount"</span>: <span class="number">"127"</span></div>
+                                <div style="padding-left: 12px;">}</div>
+                                <div>}</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 12px; padding: 12px; background: rgba(255,255,255,0.02); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                            <div style="font-size: 0.8rem; margin-bottom: 8px; color: var(--text-secondary);">Rich Snippet Preview</div>
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                                <span class="stars">★★★★★</span>
+                                <span style="font-size: 0.8rem; color: var(--neon-yellow); font-weight: 700;">5.0</span>
+                                <span style="font-size: 0.75rem; color: var(--text-muted);">(127 reviews)</span>
+                            </div>
+                            <div style="font-size: 0.8rem; color: var(--neon-blue);">FAQ: What is Technical SEO?</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Technical SEO refers to website optimizations that help search engines crawl and index your site more effectively...</div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel">
+                        <div class="section-label">Broken Links</div>
+                        <div class="flex-row justify-center items-center" style="margin-top: 10px; gap: 20px;">
+                            <div class="broken-chain">
+                                <span style="font-size: 2.5rem;">🔗</span>
+                                <div class="chain-break"></div>
+                                <span style="font-size: 2.5rem; opacity: 0.3;">💔</span>
+                            </div>
+                            <div class="flex-col" style="gap: 6px;">
+                                <div class="check-item">
+                                    <div class="check-icon" style="background: rgba(255,0,110,0.15); border-color: rgba(255,0,110,0.3); color: var(--neon-pink);">!</div>
+                                    <span style="font-size: 0.8rem;">3 Broken Found</span>
+                                </div>
+                                <div class="check-item">
+                                    <div class="check-icon">✓</div>
+                                    <span style="font-size: 0.8rem;">Auto-Fixed</span>
+                                </div>
+                                <div class="check-item">
+                                    <div class="check-icon">✓</div>
+                                    <span style="font-size: 0.8rem;">Weekly Monitor</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel" style="flex: 1;">
+                        <div class="section-label">Lighthouse Audit</div>
+                        <div class="grid-2" style="margin-top: 12px;">
+                            <div class="flex-col items-center">
+                                <div class="lighthouse-gauge">
+                                    <svg viewBox="0 0 80 80">
+                                        <circle class="gauge-bg" cx="40" cy="40" r="32"/>
+                                        <circle class="gauge-fill" cx="40" cy="40" r="32" 
+                                            stroke="#00ff88" 
+                                            stroke-dasharray="201" 
+                                            stroke-dashoffset="10"
+                                            filter="drop-shadow(0 0 6px rgba(0,255,136,0.4))"/>
+                                    </svg>
+                                    <div class="gauge-text" style="color: var(--neon-green);">98</div>
+                                </div>
+                                <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 6px;">Performance</div>
+                            </div>
+                            <div class="flex-col items-center">
+                                <div class="lighthouse-gauge">
+                                    <svg viewBox="0 0 80 80">
+                                        <circle class="gauge-bg" cx="40" cy="40" r="32"/>
+                                        <circle class="gauge-fill" cx="40" cy="40" r="32" 
+                                            stroke="#00f3ff" 
+                                            stroke-dasharray="201" 
+                                            stroke-dashoffset="8"
+                                            filter="drop-shadow(0 0 6px rgba(0,243,255,0.4))"/>
+                                    </svg>
+                                    <div class="gauge-text" style="color: var(--neon-blue);">100</div>
+                                </div>
+                                <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 6px;">SEO</div>
+                            </div>
+                            <div class="flex-col items-center">
+                                <div class="lighthouse-gauge">
+                                    <svg viewBox="0 0 80 80">
+                                        <circle class="gauge-bg" cx="40" cy="40" r="32"/>
+                                        <circle class="gauge-fill" cx="40" cy="40" r="32" 
+                                            stroke="#bc13fe" 
+                                            stroke-dasharray="201" 
+                                            stroke-dashoffset="16"
+                                            filter="drop-shadow(0 0 6px rgba(188,19,254,0.4))"/>
+                                    </svg>
+                                    <div class="gauge-text" style="color: var(--neon-purple);">96</div>
+                                </div>
+                                <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 6px;">Accessibility</div>
+                            </div>
+                            <div class="flex-col items-center">
+                                <div class="lighthouse-gauge">
+                                    <svg viewBox="0 0 80 80">
+                                        <circle class="gauge-bg" cx="40" cy="40" r="32"/>
+                                        <circle class="gauge-fill" cx="40" cy="40" r="32" 
+                                            stroke="#ffbe0b" 
+                                            stroke-dasharray="201" 
+                                            stroke-dashoffset="12"
+                                            filter="drop-shadow(0 0 6px rgba(255,190,11,0.4))"/>
+                                    </svg>
+                                    <div class="gauge-text" style="color: var(--neon-yellow);">97</div>
+                                </div>
+                                <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 6px;">Best Practices</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Particle Network Background
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let animationId;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.3;
+                this.vy = (Math.random() - 0.5) * 0.3;
+                this.size = Math.random() * 2 + 1;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0, 243, 255, 0.4)';
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            const count = Math.min(80, Math.floor((canvas.width * canvas.height) / 15000));
+            for (let i = 0; i < count; i++) {
+                particles.push(new Particle());
+            }
+        }
+        initParticles();
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            // Draw connections
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 150) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(0, 243, 255, ${0.15 * (1 - dist / 150)})`;
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
+                }
+            }
+            animationId = requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        // Slide Navigation
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.nav-dot');
+        const counter = document.getElementById('current-slide');
+        const totalSlides = slides.length;
+
+        function goToSlide(index) {
+            if (index < 0 || index >= totalSlides) return;
+            slides[currentSlide].classList.remove('active');
+            dots[currentSlide].classList.remove('active');
+            currentSlide = index;
+            slides[currentSlide].classList.add('active');
+            dots[currentSlide].classList.add('active');
+            counter.textContent = String(currentSlide + 1).padStart(2, '0');
+
+            // Trigger animations for new slide
+            triggerSlideAnimations();
+        }
+
+        function nextSlide() {
+            goToSlide((currentSlide + 1) % totalSlides);
+        }
+
+        function prevSlide() {
+            goToSlide((currentSlide - 1 + totalSlides) % totalSlides);
+        }
+
+        // Keyboard Navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        // Dot Navigation
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => goToSlide(index));
+        });
+
+        // Touch/Swipe Support
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) nextSlide();
+                else prevSlide();
+            }
+        }
+
+        // Trigger animations when slide becomes active
+        function triggerSlideAnimations() {
+            // Reset and trigger meter animations
+            const meters = slides[currentSlide].querySelectorAll('.meter-fill, .gauge-fill');
+            meters.forEach(meter => {
+                const originalOffset = meter.getAttribute('stroke-dashoffset');
+                meter.style.strokeDashoffset = meter.getAttribute('stroke-dasharray');
+                setTimeout(() => {
+                    meter.style.strokeDashoffset = originalOffset;
+                }, 100);
+            });
+
+            // Trigger canonical animation
+            const canon1 = document.getElementById('canon1');
+            if (canon1 && currentSlide === 2) {
+                canon1.classList.remove('merging');
+                void canon1.offsetWidth; // Force reflow
+                setTimeout(() => canon1.classList.add('merging'), 100);
+            }
+
+            // Trigger readability bars
+            const bars = slides[currentSlide].querySelectorAll('.readability-fill');
+            bars.forEach(bar => {
+                bar.style.animation = 'none';
+                void bar.offsetWidth;
+                bar.style.animation = '';
+            });
+        }
+
+        // Auto-advance slides (optional, disabled by default)
+        // setInterval(nextSlide, 30000);
+
+        // Initial animation trigger
+        setTimeout(triggerSlideAnimations, 500);
+
+        // Visibility API to pause particles when tab is hidden
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                cancelAnimationFrame(animationId);
+            } else {
+                animateParticles();
+            }
+        });
+    </script>
+</body>
+</html>
